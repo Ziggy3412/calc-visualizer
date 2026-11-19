@@ -7,12 +7,15 @@ import AppearanceProvider from './components/AppearanceProvider'
 import { ClerkProvider } from '@clerk/react'
 import { authEnabled, clerkKey } from './shared/auth'
 
+// Hide the "Active devices" list on the account page.
+const clerkAppearance = { elements: { profileSection__activeDevices: { display: 'none' } } }
+
 const app = <AppearanceProvider><App /></AppearanceProvider>
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     {authEnabled
-      ? <ClerkProvider publishableKey={clerkKey} afterSignOutUrl="/">{app}</ClerkProvider>
+      ? <ClerkProvider publishableKey={clerkKey} afterSignOutUrl="/" appearance={clerkAppearance}>{app}</ClerkProvider>
       : app}
   </StrictMode>,
 )
