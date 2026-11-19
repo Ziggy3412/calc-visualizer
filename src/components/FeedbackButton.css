@@ -1,4 +1,4 @@
-.feedback-dialog { width: min(440px, 94vw); padding: 28px 28px 24px; }
+.app-shell .tool-dialog.feedback-dialog, .tool-dialog.feedback-dialog { width: min(440px, 94vw); padding: 28px 28px 24px; }
 .feedback-dialog form { display: flex; flex-direction: column; gap: 22px; }
 
 .feedback-head h2,
