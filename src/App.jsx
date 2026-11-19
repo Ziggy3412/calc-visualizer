@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import TabHome from './components/TabHome'
 import Settings from './components/Settings'
 import AuthControls from './components/AuthControls'
+import FeedbackButton from './components/FeedbackButton'
 import VisualizerTour from './components/VisualizerTour'
 import VisualizerGuide from './components/VisualizerGuide'
 import { VISUALIZER_GUIDES } from './shared/visualizerGuides'
@@ -247,6 +248,7 @@ function App() {
           <button className="header-button library-button" onClick={() => libraryRef.current.showModal()}>
             Tools <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 8 4 4 4-4"/></svg>
           </button>
+          <FeedbackButton currentTool={currentTool} />
           <AuthControls />
         </div>
       </header>
