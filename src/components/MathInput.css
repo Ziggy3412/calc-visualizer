@@ -1,0 +1,20 @@
+.math-input-wrap { width: 100%; min-width: 0; flex: 1; }
+math-field.math-input { display: block; width: 100%; min-height: 42px; padding: 5px 3px; border: 1px solid transparent; border-radius: 0; background: #fff; color: #222; font-size: 22px; outline: none; --caret-color: #2d70b3; --selection-background-color: #cce0f480; --contains-highlight-background-color: transparent; --smart-fence-color: #888; --placeholder-color: #aaa; }
+math-field.math-input:focus-within { border-bottom-color: #2d70b3; }
+math-field.math-input.invalid { border-bottom-color: #c74440; }
+.math-input-error { margin-top: 4px; font-size: 11px; line-height: 1.5; color: #b74440; }
+
+/* Keep the expression and color control on the same vertical center line. */
+.app-shell .expr-row { align-items: center; }
+.app-shell .expr-row .expression-line-color { margin-top: 0; }
+math-field.math-input::part(container) { align-items: center; }
+/* Keep validation and branch notes below the input, outside its center line. */
+.app-shell .expr-row { display: grid; grid-template-columns: 22px minmax(0, 1fr); column-gap: 8px; row-gap: 0; }
+.app-shell .expr-row .math-input-wrap { display: contents; }
+.app-shell .expr-row .math-input { grid-column: 2; grid-row: 1; }
+.app-shell .expr-row .expression-line-color { grid-column: 1; grid-row: 1; }
+.app-shell .expr-row .math-input-error, .app-shell .expr-row .equation-branch { grid-column: 2; }
+
+.app-shell .expr-row { grid-template-columns:22px minmax(0,1fr) 24px; }
+.expr-delete { grid-column:3; grid-row:1; display:grid; place-items:center; width:24px; height:28px; padding:0; border:0; border-radius:4px; background:transparent; color:var(--app-muted); cursor:pointer; }
+.expr-delete:hover { color:var(--curve2); background:color-mix(in srgb,var(--curve2) 9%,transparent); }

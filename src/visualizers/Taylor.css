@@ -1,0 +1,44 @@
+/* ── Taylor / Maclaurin — tab-specific styles ──
+   (Layout, panel, chips, sliders and zoom controls come from shared/viz.css) */
+
+/* Colour legend under the polynomial formula */
+.tay-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 6px;
+}
+
+.tay-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tay-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.tay-expansion { flex-shrink: 0; border-top: 1px solid #ddd; padding: 10px 16px 12px; max-height: 30vh; overflow-y: auto; }
+.tay-expansion-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 9px; font-size: 11px; color: #777; }
+.tay-expansion-heading .viz-btn { min-height: 25px; padding: 3px 8px; }
+.tay-polynomial { display: flex; align-items: baseline; flex-wrap: wrap; gap: 10px 8px; padding: 4px 0; line-height: 1.9; font-size: 15px; color: #333; }
+.tay-polynomial-prefix, .tay-polynomial-term { display: inline-block; max-width: 100%; overflow-x: auto; }
+.tay-polynomial-dialog { width: min(1100px, 94vw); max-height: 85vh; overflow-y: auto; border: 1px solid #bbb; border-radius: 5px; padding: 24px; color: #333; }
+.tay-polynomial-dialog::backdrop { background: #0004; }
+.tay-dialog-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; border-bottom: 1px solid #ddd; padding-bottom: 14px; margin-bottom: 18px; }
+.tay-dialog-header h2 { margin: 0; font-size: 17px; font-weight: 500; }
+.tay-dialog-context { color: #777; font-size: 13px; margin-bottom: 14px; }
+.tay-general-form { padding: 14px 0; margin-bottom: 18px; border-bottom: 1px solid #eee; font-size: 16px; overflow-x: auto; }
+.tay-polynomial-dialog .tay-polynomial { font-size: 20px; gap: 18px 12px; }
+.tay-polynomial-dialog > .viz-hint { margin-top: 22px; }
+
+.tay-view-controls { align-items:center; flex-wrap:wrap; }
+.tay-view-controls .viz-btn { flex:0 0 auto; }
+.tay-view-controls .viz-hint { margin-left:auto; font-size:10px; }

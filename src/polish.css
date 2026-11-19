@@ -1,0 +1,84 @@
+/* Shared visual language for the workspace, libraries, and study pages. */
+.app-shell { --surface-raised:var(--app-bg); --surface-tint:color-mix(in srgb,var(--app-accent) 5%,var(--app-bg)); }
+.app-shell .workspace-header { background:var(--app-bg); border-color:var(--app-border); }
+.app-shell .workspace-brand { color:var(--app-text); }
+.app-shell .app-mark { stroke:var(--app-accent); }
+.app-shell .header-button { color:var(--app-text); border-radius:6px; }
+.app-shell .header-button:hover { background:var(--surface-tint); border-color:var(--app-border); }
+.app-shell .library-button { background:var(--surface-tint); }
+.app-shell .tab { color:var(--app-muted); }
+.app-shell .tab.active { background:var(--app-bg); }
+.app-shell .tool-dialog { border-color:var(--app-border); border-radius:14px; background:var(--app-bg); box-shadow:0 20px 70px #0003; }
+.app-shell .tool-dialog::backdrop { background:#101b2b66; backdrop-filter:blur(3px); }
+.app-shell .dialog-close { color:var(--app-muted); border-radius:7px; }
+.app-shell .dialog-close:hover { background:var(--surface-tint); }
+.app-shell .tab-home { background:var(--app-bg); padding:28px; }
+.app-shell .tool-list-heading { align-items:flex-start; flex-direction:column; gap:4px; margin-bottom:22px; }
+.app-shell .tool-list-heading h1 { font-size:26px; letter-spacing:-.04em; color:var(--app-text); }
+.app-shell .tool-list-heading>span { color:var(--app-muted); }
+.app-shell .tool-search-wrap { height:42px; border-radius:9px; background:var(--surface-subtle); }
+.app-shell .tool-search { color:var(--app-text); }
+.app-shell .tool-group h2 { color:var(--app-muted); padding:0 2px; font-size:10px; margin:24px 0 10px; }
+.app-shell .tool-item { border:1px solid var(--app-border); border-radius:10px; padding:15px; margin:8px 0; color:var(--app-text); gap:22px; }
+.app-shell .tool-item:hover { background:var(--surface-tint); border-color:var(--app-accent); }
+.app-shell .tool-label { font-size:14px; font-weight:600; }
+.app-shell .tool-description { font-size:12px; line-height:1.6; max-width:440px; }
+.app-shell .tool-math { color:var(--app-accent); max-width:30%; overflow:hidden; }
+.app-shell .viz-header { padding-top:14px; padding-bottom:14px; }
+.app-shell .viz-title { font-size:13px; letter-spacing:-.015em; }
+.app-shell .viz-btn,.app-shell .viz-chip,.app-shell .viz-num-input { border-radius:6px; }
+.app-shell .viz-results { padding-top:18px; padding-bottom:18px; gap:12px; }
+.app-shell .viz-result-value { font-variant-numeric:tabular-nums; }
+.app-shell .zoom-controls { border-radius:9px; border-color:var(--app-border); box-shadow:0 4px 14px #0001; }
+.app-shell .practice-nav { background:var(--surface-subtle); }
+.app-shell .practice-nav-heading { padding-top:26px; padding-bottom:20px; flex-wrap:wrap; }
+.app-shell .practice-nav-heading h1,.app-shell .theorems-heading h1 { font-size:23px; letter-spacing:-.035em; }
+.app-shell .practice-filters input,.app-shell .practice-filters select { border-radius:7px; }
+.app-shell .practice-topic-list { padding:0 8px 24px; }
+.app-shell .practice-topic-list h2 { line-height:1.6; margin:20px 8px 8px; font-size:10px; letter-spacing:.065em; }
+.app-shell .practice-topic-list button { background:transparent; border-radius:7px; border-left:0; padding:11px 10px; margin:2px 0; align-items:flex-start; }
+.app-shell .practice-topic-list button:hover { background:var(--surface-tint); }
+.app-shell .practice-topic-list button.selected { background:color-mix(in srgb,var(--app-accent) 10%,var(--app-bg)); box-shadow:inset 3px 0 var(--app-accent); }
+.app-shell .practice-main { padding-top:40px; padding-bottom:60px; }
+.app-shell .practice-question-meta { font-size:10px; line-height:1.6; }
+.app-shell .practice-question h2 { font-weight:600; }
+.app-shell .practice-equation { background:var(--surface-subtle); border:1px solid var(--app-border); border-radius:12px; padding:18px 22px; margin:24px 0; }
+.app-shell .practice-choices label { border-radius:10px; padding:17px; }
+.app-shell .practice-choices label.chosen { background:var(--surface-tint); }
+.app-shell .practice-choices label.correct { padding:16px; }
+.app-shell .practice-answer-actions { flex-wrap:wrap; }
+.app-shell .practice-layout button { border-radius:7px; }
+.app-shell .practice-explanation { padding:22px; background:var(--surface-subtle); border:1px solid var(--app-border); border-radius:12px; }
+.app-shell .practice-visualizer { margin-top:24px; }
+.app-shell .theorem-demo { border-radius:12px; }
+.app-shell .theorem-pitfall { border-radius:0 9px 9px 0; }
+.app-shell .theorem-list button { border-radius:7px; }
+.app-shell .lesson-steps li::marker { color:var(--app-accent); font-weight:600; }
+.app-shell .lesson-toolbar h2 { font-size:18px; font-weight:600; letter-spacing:-.02em; }
+@media(max-width:600px) {
+ .app-shell .practice-layout { flex-direction:column; }
+ .app-shell .practice-nav { width:100%; min-width:0; max-height:36vh; border-right:0; border-bottom:1px solid var(--app-border); }
+ .app-shell .practice-nav-heading { padding:14px 16px 10px; }
+ .app-shell .practice-filters { gap:8px; padding-bottom:10px; }
+ .app-shell .practice-topic-list { min-height:70px; }
+ .app-shell .practice-source { display:none; }
+ .app-shell .practice-main { min-height:0; padding:24px 18px 40px; }
+ .app-shell .practice-question-meta { flex-wrap:wrap; }
+ .app-shell .practice-pagination { gap:8px; }
+ .app-shell .practice-pagination button { font-size:12px; }
+ .app-shell .tab-home { padding:22px 18px; }
+ .app-shell .tool-item { gap:12px; }
+ .app-shell .tool-description { font-size:11px; }
+}
+@media(max-width:420px) {
+ .app-shell .workspace-brand { font-size:0; gap:0; }
+ .app-shell .workspace-header { gap:8px; padding:0 8px; }
+ .app-shell .workspace-actions { gap:2px; }
+}
+@media(max-width:600px) {
+ .app-shell .workspace-brand { font-size:0; gap:0; }
+ .app-shell .workspace-header { gap:5px; padding:0 8px; }
+ .app-shell .workspace-actions { gap:2px; }
+ .app-shell .header-button { font-size:11px; padding:4px 5px; gap:4px; }
+}
+.bound-input { min-width:0; display:flex; flex-direction:column; gap:5px; }.bound-infinity-buttons { display:flex; gap:4px; }.bound-infinity-buttons button { flex:1; background:var(--app-bg); color:var(--app-accent); border:1px solid var(--app-border); border-radius:4px; font-size:12px; padding:2px 7px; cursor:pointer; }.bound-infinity-buttons button:hover { background:var(--surface-tint); }

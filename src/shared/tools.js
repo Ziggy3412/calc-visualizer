@@ -1,0 +1,17 @@
+export const TOOLS = [
+  { id: 'challenges', label: 'Challenges', category: 'Study', description: '20 advanced free-response problems across all 10 units, with hints and rigorous solutions.', latex: String.raw`\star`, color: '#b07827' },
+  { id: 'proofs', label: 'Proofs', category: 'Study', description: 'Step-by-step proofs of IVT, MVT, Rolle, FTC, and other core calculus results.', latex: String.raw`\therefore`, color: '#6042a6' },
+  { id: 'theorems', label: 'Theorems & Rules', category: 'Study', description: 'IVT, MVT, Rolle, FTC, derivative tests, convergence, and error bounds—with hypotheses and examples.', latex: String.raw`f'(c)=\frac{f(b)-f(a)}{b-a}`, color: '#6042a6' },
+  { id: 'practice', label: 'Practice', category: 'Study', description: 'Ten questions per AB and BC topic, with worked explanations and visualizers.', latex: 'f(x)', color: '#2d70b3' },
+  { id: 'implicitdiff', label: 'Implicit Differentiation', category: 'Derivatives', description: 'Learn the chain rule, solve for dy/dx, and find a tangent.', latex: String.raw`\frac{dy}{dx}=-\frac{F_x}{F_y}`, color: '#2d70b3' },
+  { id: 'relatedrates', label: 'Related Rates', category: 'Derivatives', description: 'Work through changing quantities, time derivatives, and units.', latex: String.raw`F_x\frac{dx}{dt}+F_y\frac{dy}{dt}=0`, color: '#388c46' },
+  { id: 'limits', label: 'Limits', category: 'Foundations', description: 'Approach a finite point or ±∞. Explore continuity and holes.', latex: '\\lim_{x \\to a} f(x)', color: '#2d70b3' },
+  { id: 'riemann', label: 'Riemann Sums', category: 'Integration', description: 'Build an integral with rectangles, or use ±∞ bounds for improper integrals.', latex: '\\sum_{i=1}^{n} f(x_i^*)\\Delta x', color: '#388c46' },
+  { id: 'pva', label: 'Position, Velocity & Acceleration', category: 'Derivatives', description: 'Connect a function, its derivatives, and its tangent lines.', latex: "f(x),\\quad f'(x),\\quad f''(x)", color: '#c74440' },
+  { id: 'polar', label: 'Polar Integration', category: 'Integration', description: 'Trace polar curves and sweep out their area.', latex: '\\tfrac12\\int r^2\\,d\\theta', color: '#6042a6' },
+  { id: 'crosssection', label: 'Volume by Cross Section', category: '3D geometry', description: 'Stack squares, triangles, and semicircles into a solid.', latex: 'V=\\int_a^b A(x)\\,dx', color: '#c78b25' },
+  { id: 'solids', label: 'Solids & Surface Area of Revolution', category: '3D geometry', description: 'Find volume and surface area with disks, washers, and shells.', latex: '\\pi\\int_a^b [f(x)]^2\\,dx', color: '#2d70b3' },
+  { id: 'taylor', label: 'Taylor / Maclaurin', category: 'Series', description: 'Watch a polynomial grow to approximate a function.', latex: '\\sum_{k=0}^{n}\\frac{f^{(k)}(a)}{k!}(x-a)^k', color: '#6042a6' },
+  { id: 'slopefield', label: 'Slope Fields', category: 'Differential equations', description: 'See a differential equation and trace its solution curves.', latex: '\\frac{dy}{dx}=g(x,y)', color: '#388c46' },
+  { id: 'byparts', label: 'Integration by Parts', category: 'Integration', description: 'See how two areas fit together to explain integration by parts.', latex: '\\int u\\,dv=uv-\\int v\\,du', color: '#c74440' },
+]

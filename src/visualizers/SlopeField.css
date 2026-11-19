@@ -1,0 +1,7 @@
+/* ── Slope Fields — tab-specific styles ──
+   (Layout, panel, chips, sliders and zoom controls come from shared/viz.css) */
+
+/* Crosshair cursor hints that clicking the plot drops a seed point */
+.slf-graph {
+  cursor: crosshair;
+}

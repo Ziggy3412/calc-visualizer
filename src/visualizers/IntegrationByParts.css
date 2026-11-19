@@ -1,0 +1,35 @@
+/* ── Integration by Parts — tab-specific styles ──
+   (Layout, panel, chips, sliders and zoom controls come from shared/viz.css) */
+
+/* The two substitution lines (u=…, dv=… and du=…, v=…) sit a little tighter
+   than the main identity formula above them. */
+.ibp-subst {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+/* Colour legend under the graph, matching the shaded regions + curve. */
+.ibp-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+.ibp-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ibp-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

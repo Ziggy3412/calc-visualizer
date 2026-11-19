@@ -1,0 +1,40 @@
+/* ── Solids & Surface Area of Revolution — tab-specific styles ──
+   (Layout, panel, buttons, sliders and results come from shared/viz.css) */
+
+/* Auto-bounds button spans full width under the interval */
+.sol-autobounds {
+  margin-top: 4px;
+}
+
+/* "c =" input row for the custom axis */
+.sol-custom-axis {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.sol-custom-axis .viz-num-input {
+  width: 80px;
+}
+
+/* Appearance (view) toggle row above the graph */
+.sol-display-row {
+  align-items: center;
+}
+
+.sol-display-row .viz-field-label {
+  min-width: 40px;
+}
+
+/* Live label floating next to the representative slice (drei Html) */
+.sol-slice-label {
+  background: rgba(17, 24, 39, 0.82);
+  color: #fff;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: var(--mono);
+  white-space: nowrap;
+  pointer-events: none;
+}

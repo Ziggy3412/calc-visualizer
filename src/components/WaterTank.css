@@ -1,0 +1,8 @@
+.water-tank { padding:22px 26px 14px; border-bottom:1px solid var(--app-border); color:var(--app-text); }
+.water-tank-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; }.water-tank h2 { font-size:18px; margin:0; letter-spacing:-.02em; }.water-tank-heading p { font-size:12px; color:var(--app-muted); margin:6px 0; }.water-tank-heading>span { white-space:nowrap; font-size:12px; color:var(--app-accent); }
+.water-tank svg { display:block; width:100%; height:auto; margin:12px 0; }.water-tank svg text { fill:var(--app-text); font:12px var(--sans); }
+.water-tank-controls { display:flex; align-items:center; flex-wrap:wrap; gap:14px; }.water-tank-controls label { display:flex; align-items:center; flex:1; gap:12px; font-size:11px; white-space:nowrap; }.water-tank-controls input { width:100%; min-width:80px; accent-color:var(--app-accent); }.water-tank-controls output { font-size:11px; font-variant-numeric:tabular-nums; }
+.water-tank-note { color:var(--app-muted); font-size:11px; line-height:1.7; margin:12px 0; }.water-tank-formula { overflow-x:auto; padding:10px 0; font-size:13px; }
+@media(max-width:700px) { .water-tank { padding:18px 16px; }.water-tank svg { min-height:180px; }.water-tank-controls label { flex-basis:100%; } }
+.water-tank svg { max-width:440px; margin-left:auto; margin-right:auto; }
+.water-tank-readouts { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:12px 0 20px; font-size:11px; color:var(--app-muted); }.water-tank-readouts span { display:flex; flex-direction:column; gap:4px; }.water-tank-readouts strong { font-size:14px; font-weight:500; color:var(--app-text); font-variant-numeric:tabular-nums; }

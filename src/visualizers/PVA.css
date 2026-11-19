@@ -1,0 +1,68 @@
+/* ── PVA — tab-specific styles ──
+   (Layout, panel, sliders, toggles and zoom controls come from shared/viz.css) */
+
+/* ── Derived functions rows ── */
+.pva-deriv-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pva-deriv-label {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--mono);
+  min-width: 30px;
+}
+
+.pva-deriv-expr {
+  font-size: 14px;
+  color: var(--text-h);
+  overflow: hidden;
+}
+
+/* ── Values at cursor ── */
+.pva-val-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.pva-val {
+  font-family: var(--mono);
+  color: var(--text-h);
+}
+
+/* ── Curve toggle buttons (top-left overlay on the graph) ──
+   Builds on the shared .viz-toggle but floats over the plot, and each button
+   fills with its curve's colour when active. */
+.pva-graph-tabs {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+  box-shadow: var(--shadow);
+}
+
+.pva-graph-tabs .viz-toggle-btn {
+  font-family: var(--mono);
+  padding: 5px 14px;
+}
+
+.pva-graph-tabs .viz-toggle-btn.active {
+  background: var(--tab-color, var(--accent));
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Analysis overlay checkboxes tinted to match their graph colours ── */
+.pva-overlays {
+  padding-top: 4px;
+  border-top: 1px solid var(--border-light);
+  margin-top: 4px;
+}
+
+.pva-overlay-conc { color: #3b82f6; }
+.pva-overlay-infl { color: #a855f7; }
+.pva-overlay-crit { color: #d97706; }

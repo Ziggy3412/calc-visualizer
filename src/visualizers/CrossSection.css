@@ -1,0 +1,9 @@
+/* ── Volume by Cross Section — tab-specific styles ──
+   (Layout, panel, toggles, sliders and zoom controls come from shared/viz.css) */
+
+/* Wrapper for the 2D view so the zoom controls can overlay it */
+.cs-2d-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}

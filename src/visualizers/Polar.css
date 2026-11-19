@@ -1,0 +1,9 @@
+/* ── Polar Integration — tab-specific styles ──
+   (Layout, panel, buttons, results and zoom controls come from shared/viz.css) */
+
+/* Small "= π/2" hint under the θ inputs */
+.polar-pi-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--mono);
+}
