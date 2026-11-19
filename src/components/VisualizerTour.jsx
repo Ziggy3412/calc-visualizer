@@ -77,7 +77,7 @@ export default function VisualizerTour({toolId,onClose,onFullGuide,onTryExample}
    {start&&end&&<path d={`M${start.x},${start.y} Q${(start.x+end.x)/2},${start.y-35} ${end.x},${end.y}`} fill="none" stroke="#2d70b3" strokeWidth="3" markerEnd={`url(#${id}-arrow)`}/>}
   </svg>
   <div className="tour-topbar"><div><span>GUIDED TOUR</span><strong>{tool?.label}</strong></div><button onClick={onClose} aria-label="Close guided tour">End tour ×</button></div>
-  <section className="tour-card" ref={card} style={placement||{left:'50%',top:'50%',transform:'translate(-50%,-50%)'}} aria-live="polite" aria-atomic="true">
+  <section className="tour-card" ref={card} style={placement||{left:'50%',top:'50%',transform:'translate(-50%,-50%)',visibility:'hidden'}} aria-live="polite" aria-atomic="true">
    <div className="tour-progress">{current+1} / {steps.length||definition.length}<span>Use ← → or the buttons</span></div>
    <h2>{step?.title}</h2><p>{step?.text}</p>
    <div className="tour-navigation"><button disabled={current===0} onClick={()=>setIndex(current-1)}>← Back</button><button className="tour-next" onClick={next}>{last?'Finish tour':'Next →'}</button></div>
