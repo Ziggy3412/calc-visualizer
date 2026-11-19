@@ -1,5 +1,6 @@
-.app-shell .tool-dialog.feedback-dialog, .tool-dialog.feedback-dialog { width: min(440px, 94vw); padding: 28px 28px 24px; }
-.feedback-dialog form { display: flex; flex-direction: column; gap: 22px; }
+.app-shell .tool-dialog.feedback-dialog, .tool-dialog.feedback-dialog { width: min(480px, 92vw); padding: 40px 40px 32px; }
+.feedback-dialog form { display: flex; flex-direction: column; gap: 24px; }
+.feedback-dialog .dialog-close { top: 18px; right: 18px; }
 
 .feedback-head h2,
 .feedback-sent h2 { margin: 0; font-size: 18px; font-weight: 600; }
