@@ -36,15 +36,20 @@ export default async function handler(req, res) {
   const message = String(body.message || '').trim()
   const email = String(body.email || '').trim().slice(0, 200)
   const page = String(body.page || '').trim().slice(0, 100)
-  if (message.length < 3) return res.status(400).json({ error: 'Please write a little more.' })
+  const rating = Number.isInteger(body.rating) && body.rating >= 1 && body.rating <= 5 ? body.rating : null
+  // A star rating alone is fine; a message alone is fine; at least one is needed.
+  if (!rating && message.length < 3) return res.status(400).json({ error: 'Please pick a star rating or write a message.' })
   if (message.length > MAX_LENGTH) return res.status(400).json({ error: `Please keep it under ${MAX_LENGTH} characters.` })
 
   const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown'
   if (tooMany(ip)) return res.status(429).json({ error: 'Too many messages. Please try again later.' })
 
+  const stars = rating ? '★'.repeat(rating) + '☆'.repeat(5 - rating) : ''
   const firstLine = message.split('\n')[0]
-  const title = `Feedback: ${firstLine.length > 60 ? firstLine.slice(0, 60) + '…' : firstLine}`
+  const snippet = firstLine.length > 60 ? firstLine.slice(0, 60) + '…' : firstLine
+  const title = [stars && `${stars} (${rating}/5)`, snippet || (rating && 'rating only')].filter(Boolean).join(' · ')
   const details = [
+    rating && `**Rating:** ${rating}/5`,
     `**From:** ${email || 'anonymous'}`,
     page && `**Visualizer:** ${page}`,
     `**Sent:** ${new Date().toISOString()}`,
@@ -58,7 +63,7 @@ export default async function handler(req, res) {
       'Content-Type': 'application/json',
       'User-Agent': 'calc-visualizer-feedback',
     },
-    body: JSON.stringify({ title, body: `${message}\n\n---\n${details}` }),
+    body: JSON.stringify({ title: `Feedback: ${title}`, body: `${message || '_No written feedback._'}\n\n---\n${details}` }),
   })
 
   if (!response.ok) {
