@@ -1,7 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TeX from '../components/TeX'
 import { UNITS } from './questions'
 import { CHALLENGES } from './challengeQuestions'
+import SyncNote from '../components/SyncNote'
+import { PROGRESS_SYNCED, notifyProgressChanged } from '../shared/progressEvents'
 import './Practice.css'
 import './Challenges.css'
 
@@ -30,10 +32,18 @@ export default function Challenges() {
     const next = { ...saved, [question.id]: { ...saved[question.id], ...patch } }
     setSaved(next)
     try { localStorage.setItem(KEY, JSON.stringify(next)); setSaveError(false) } catch { setSaveError(true) }
+    if ('complete' in patch) notifyProgressChanged()
   }
+  // Reload when progress from the signed-in account arrives.
+  useEffect(() => {
+    const reload = () => setSaved(readSaved())
+    window.addEventListener(PROGRESS_SYNCED, reload)
+    return () => window.removeEventListener(PROGRESS_SYNCED, reload)
+  }, [])
   return <div className="practice-layout challenge-layout">
     <aside className="practice-nav" aria-label="Challenge units">
       <div className="practice-nav-heading"><h1>Challenges</h1><span>{complete} / {available.length} completed</span></div>
+      <SyncNote />
       <div className="practice-filters">
         <div className="practice-courses" role="group" aria-label="Challenge course">{['AB','BC'].map(value => <button key={value} aria-pressed={course === value} onClick={() => { setCourse(value); setUnit('all') }}>Calculus {value}</button>)}</div>
         <label>Unit<select aria-label="Challenge unit" value={unit} onChange={e => setUnit(e.target.value)}><option value="all">All units</option>{UNITS.filter(u => course === 'BC' || u.id < 9).map(u => <option key={u.id} value={u.id}>{u.id}. {u.title}</option>)}</select></label>

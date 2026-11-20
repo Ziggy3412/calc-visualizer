@@ -1,7 +1,9 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import TeX from '../components/TeX'
 import { FRAMEWORK_URL, QUESTIONS, TOPICS, UNITS } from './questions'
 import { PRACTICE_THEOREMS } from '../shared/theorems'
+import SyncNote from '../components/SyncNote'
+import { PROGRESS_SYNCED, notifyProgressChanged } from '../shared/progressEvents'
 import './Practice.css'
 
 const STORAGE_KEY = 'calc-practice-v1'
@@ -29,7 +31,14 @@ export default function Practice({ onOpenVisualizer }) {
     setProgress(next)
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); setSaveError(false) }
     catch { setSaveError(true) }
+    notifyProgressChanged()
   }
+  // Reload when progress from the signed-in account arrives.
+  useEffect(() => {
+    const reload = () => setProgress(readProgress())
+    window.addEventListener(PROGRESS_SYNCED, reload)
+    return () => window.removeEventListener(PROGRESS_SYNCED, reload)
+  }, [])
   const courseQuestions = QUESTIONS.filter(q => course === 'BC' || !q.bcOnly)
   const search = query.trim().toLowerCase()
   const matchingTopics = new Set(courseQuestions.filter(q => `${q.id} ${q.title} ${q.prompt}`.toLowerCase().includes(search)).map(q => q.topicId))
@@ -50,6 +59,7 @@ export default function Practice({ onOpenVisualizer }) {
   return <div className="practice-layout">
     <aside className="practice-nav" aria-label="Practice topics">
       <div className="practice-nav-heading"><h1>Practice</h1><span>{correct} / {courseQuestions.length} correct</span></div>
+      <SyncNote />
       <div className="practice-filters">
         <div className="practice-courses" role="group" aria-label="Course">{['AB', 'BC'].map(value => <button key={value} aria-pressed={course === value} onClick={() => { setCourse(value); setUnit('all'); mainRef.current?.scrollTo({ top: 0 }) }}>Calculus {value}</button>)}</div>
         <label>Unit<select aria-label="Practice unit" value={unit} onChange={e => { setUnit(e.target.value); mainRef.current?.scrollTo({ top: 0 }) }}><option value="all">All units</option>{UNITS.filter(u => course === 'BC' || u.id < 9).map(u => <option key={u.id} value={u.id}>{u.id}. {u.title}</option>)}</select></label>

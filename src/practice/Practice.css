@@ -17,3 +17,6 @@
 .panel-collapsed .practice-nav { display:none; }
 
 .practice-question-picker{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 8px}.practice-question-picker button{min-width:36px;min-height:36px;padding:6px;border:1px solid var(--app-border);border-radius:6px;background:var(--app-bg);color:var(--app-text);cursor:pointer}.practice-question-picker button[aria-current]{background:var(--app-accent);color:white;border-color:var(--app-accent)}.practice-question-count{font-size:12px;color:var(--app-muted)}.practice-completion{white-space:nowrap;font-size:11px}
+
+.sync-note { margin:-4px 20px 10px; font-size:11px; line-height:1.4; color:var(--app-muted); }
+.sync-note-error { color:#c0392b; }
