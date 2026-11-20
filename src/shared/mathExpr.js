@@ -40,8 +40,51 @@ export function stripLHS(input) {
 //     this, typing ln(1+x) would silently fail to plot
 // MathLive emits fractions as (a)/(b)c. Make juxtaposition after a closing
 // parenthesis explicit so math.js cannot absorb c into the denominator.
+//   • |x| → abs(x) — math.js has no absolute-value bars, only abs()
 export function normalizeMathAscii(input) {
-  return String(input).replace(/θ/g, 'theta').replace(/\bln\b/g, 'log').replace(/\)\s*(?=[A-Za-z0-9_(])/g, ')*')
+  return absoluteBars(String(input)).replace(/θ/g, 'theta').replace(/\bln\b/g, 'log').replace(/\)\s*(?=[A-Za-z0-9_(])/g, ')*')
+}
+
+// Turn absolute-value bars into abs(...). A bar closes the most recent open
+// bar when it comes right after a value (x, 2, a closing bracket, …) at the
+// same bracket depth; otherwise it opens a new one. That reads |x-1|+|x|,
+// ||x|-1| and (|x|)/(x) the way they are written. Unmatched bars are left
+// alone so math.js still reports the expression as incomplete.
+//   absoluteBars("|x|")        -> "abs(x)"
+//   absoluteBars("2|x|")       -> "2*abs(x)"
+//   absoluteBars("||x|-1|")    -> "abs(abs(x)-1)"
+const FUNCTION_NAMES = new Set(['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'arcsin', 'arccos', 'arctan', 'sinh', 'cosh', 'tanh', 'log', 'ln', 'exp', 'sqrt'])
+export function absoluteBars(input) {
+  const s = String(input)
+  if (!s.includes('|')) return s
+  let out = '', depth = 0
+  const open = [] // { depth inside abs(, extra closing brackets }
+  for (const ch of s) {
+    if (ch === '(' || ch === '[') depth++
+    else if (ch === ')' || ch === ']') depth--
+    else if (ch === '|') {
+      const trimmed = out.trimEnd()
+      const prev = trimmed.slice(-1)
+      const afterValue = /[A-Za-z0-9_.)\]!']/.test(prev)
+      const word = trimmed.match(/([A-Za-z]+)$/)?.[1]
+      if (open.length && open.at(-1).depth === depth && afterValue) {
+        out += ')'.repeat(1 + open.pop().extra)
+        depth--
+      } else if (word && FUNCTION_NAMES.has(word)) {
+        // sin |x|  ->  sin(abs(x))
+        out = trimmed + '(abs('
+        depth++
+        open.push({ depth, extra: 1 })
+      } else {
+        out += (afterValue ? '*' : '') + 'abs('
+        depth++
+        open.push({ depth, extra: 0 })
+      }
+      continue
+    }
+    out += ch
+  }
+  return open.length ? s : out
 }
 export function normalizeExpr(input) {
   const s = stripLHS(input)
