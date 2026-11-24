@@ -68,3 +68,12 @@
   text-align: right;
   color: var(--text-h);
 }
+
+/* ── Limits at ±∞ ── */
+.infinity-verdict { display: flex; flex-direction: column; gap: 3px; margin: 10px 0 12px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--app-border, #ddd); border-left: 4px solid var(--app-accent, #2f6fde); background: var(--surface-subtle, #f7f7f9); font-size: 12px; line-height: 1.45; }
+.infinity-verdict strong { font-size: 15px; }
+.infinity-verdict-label { font-size: 11px; color: var(--app-muted, #777); text-transform: uppercase; letter-spacing: .04em; }
+.infinity-verdict-oscillates, .infinity-verdict-oscillates-growing, .infinity-verdict-undefined { border-left-color: #d97706; }
+.infinity-verdict-unclear { border-left-color: #9ca3af; }
+.infinity-table td:first-child { text-align: left; }
+.infinity-table th:first-child { text-align: left; }
