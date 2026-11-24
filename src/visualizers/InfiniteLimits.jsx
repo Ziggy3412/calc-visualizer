@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import BoundInput from '../components/BoundInput'
 import MathInput from '../components/MathInput'
 import Plot from '../components/ThemedPlot'
+import TeX from '../components/TeX'
 import VizSlider from '../components/VizSlider'
 import { cartesianLayout, PLOT_CONFIG } from '../shared/plotDefaults'
 import { formatBound } from '../shared/infinity'
@@ -64,7 +65,7 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
     {entries.map(entry => <div className="viz-section" key={entry.id}><MathInput value={entry.latex} onInput={(latex, ascii) => onEntries(prev => prev.map(e => (e.id === entry.id ? { ...e, latex, expr: ascii } : e)))} /></div>)}
     <div className="viz-section"><button className="viz-btn" onClick={() => onEntries(prev => [...prev, { id: crypto.randomUUID(), expr: '', latex: '' }])}>Add function</button></div>
     {functions.map(entry => <div className="viz-section" key={entry.id}>
-      <strong className="viz-title">f(x) = {entry.expr}</strong>
+      <strong className="viz-title">{entry.latex ? <TeX math={`f(x) = \\displaystyle ${entry.latex}`} /> : `f(x) = ${entry.expr}`}</strong>
       <div className={`infinity-verdict infinity-verdict-${entry.result.kind}`} role="status">
         <span className="infinity-verdict-label">As x → {to}</span>
         <strong>{entry.verdict.headline}</strong>
