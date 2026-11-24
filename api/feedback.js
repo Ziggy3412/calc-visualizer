@@ -4,6 +4,11 @@
 // Needs two environment variables in Vercel:
 //   FEEDBACK_GITHUB_TOKEN  fine-grained token with Issues: Read and write on the repo
 //   FEEDBACK_GITHUB_REPO   e.g. Ziggy3412/calc-visualizer-feedback
+//
+// Optional: also add each piece of feedback as a row in a Google Sheet, through
+// a Google Apps Script web app attached to the sheet:
+//   FEEDBACK_SHEET_URL     the Apps Script web app URL (ends in /exec)
+//   FEEDBACK_SHEET_SECRET  a shared secret, the same one written in the script
 
 const MAX_LENGTH = 2000
 const RATE_LIMIT = 5 // submissions per IP per window (best effort, per server instance)
@@ -23,7 +28,11 @@ export default async function handler(req, res) {
 
   const token = process.env.FEEDBACK_GITHUB_TOKEN
   const repo = process.env.FEEDBACK_GITHUB_REPO
-  if (!token || !repo) return res.status(503).json({ error: 'Feedback is not set up yet.' })
+  const sheetUrl = process.env.FEEDBACK_SHEET_URL
+  const sheetSecret = process.env.FEEDBACK_SHEET_SECRET
+  const github = Boolean(token && repo)
+  const sheet = Boolean(sheetUrl && sheetSecret)
+  if (!github && !sheet) return res.status(503).json({ error: 'Feedback is not set up yet.' })
 
   let body = req.body || {}
   if (typeof body === 'string') {
@@ -55,20 +64,41 @@ export default async function handler(req, res) {
     `**Sent:** ${new Date().toISOString()}`,
   ].filter(Boolean).join('\n')
 
-  const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-      'User-Agent': 'calc-visualizer-feedback',
-    },
-    body: JSON.stringify({ title: `Feedback: ${title}`, body: `${message || '_No written feedback._'}\n\n---\n${details}` }),
-  })
+  const sent = new Date().toISOString()
+  let issueUrl = ''
+  if (github) {
+    const response = await fetch(`https://api.github.com/repos/${repo}/issues`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'calc-visualizer-feedback',
+      },
+      body: JSON.stringify({ title: `Feedback: ${title}`, body: `${message || '_No written feedback._'}\n\n---\n${details}` }),
+    })
+    if (!response.ok) {
+      console.error('GitHub issue creation failed', response.status, await response.text())
+      if (!sheet) return res.status(502).json({ error: 'Could not save feedback. Please try again later.' })
+    } else {
+      issueUrl = (await response.json().catch(() => ({}))).html_url || ''
+    }
+  }
 
-  if (!response.ok) {
-    console.error('GitHub issue creation failed', response.status, await response.text())
-    return res.status(502).json({ error: 'Could not save feedback. Please try again later.' })
+  if (sheet) {
+    try {
+      const response = await fetch(sheetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ secret: sheetSecret, sent, rating, message, email, page, issueUrl }),
+        signal: AbortSignal.timeout(8000),
+      })
+      const text = await response.text()
+      if (!response.ok || text.trim() !== 'ok') throw new Error(`Sheet answered ${response.status}: ${text.slice(0, 200)}`)
+    } catch (error) {
+      console.error('Google Sheet append failed', error)
+      if (!issueUrl) return res.status(502).json({ error: 'Could not save feedback. Please try again later.' })
+    }
   }
   return res.status(200).json({ ok: true })
 }
