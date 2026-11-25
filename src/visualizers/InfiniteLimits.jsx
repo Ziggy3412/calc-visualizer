@@ -35,29 +35,36 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
   }), [entries, sign])
 
   const probe = sign * 10 ** power
-  // Use a log scale for y when every curve is positive and spans many powers of ten,
-  // so growth like x or e^x stays readable instead of hugging the axis.
+  // Use a log scale for y when every curve stays on one side of 0 and spans many
+  // powers of ten, so growth like x or e^x stays readable instead of hugging the
+  // axis and then shooting off at the end. All-negative curves are drawn by size
+  // with a "−" on the labels, the same way the x-axis handles x → −∞.
   const allValues = functions.flatMap(entry => entry.curve.filter(Number.isFinite))
-  const logY = allValues.length > 0 && allValues.every(v => v > 0) && Math.max(...allValues) / Math.min(...allValues) > 1e4
+  const spansDecades = list => list.length > 0 && Math.max(...list) / Math.min(...list) > 1e4
+  const ySign = allValues.length > 0 && allValues.every(v => v > 0) ? 1 : allValues.length > 0 && allValues.every(v => v < 0) ? -1 : 0
+  const logY = ySign !== 0 && functions.every(entry => entry.result.kind === 'infinity') && spansDecades(allValues.map(Math.abs))
+  const shownY = v => (Number.isFinite(v) ? (logY ? Math.abs(v) : v) : null)
 
   const traces = functions.flatMap(entry => {
     const y = entry.f(sign, power)
     return [
-      { x: GRAPH_POWERS.map(k => 10 ** k), y: entry.curve.map(v => (Number.isFinite(v) ? v : null)), type: 'scatter', mode: 'lines', line: { color: entry.color, width: 3 }, name: entry.expr, connectgaps: false, hovertemplate: 'x = %{x:.3s}<br>f(x) = %{y:.6g}<extra></extra>' },
-      ...(Number.isFinite(y) ? [{ x: [10 ** power], y: [y], type: 'scatter', mode: 'markers', marker: { size: 11, color: '#7c3aed' }, showlegend: false, hoverinfo: 'skip' }] : []),
+      { x: GRAPH_POWERS.map(k => 10 ** k), y: entry.curve.map(shownY), customdata: GRAPH_POWERS.map((k, i) => [formatValue(sign * 10 ** k), formatValue(entry.curve[i])]), type: 'scatter', mode: 'lines', line: { color: entry.color, width: 3 }, name: entry.expr, connectgaps: false, hovertemplate: 'x = %{customdata[0]}<br>f(x) = %{customdata[1]}<extra></extra>' },
+      ...(Number.isFinite(y) ? [{ x: [10 ** power], y: [shownY(y)], type: 'scatter', mode: 'markers', marker: { size: 11, color: '#7c3aed' }, showlegend: false, hoverinfo: 'skip' }] : []),
     ]
   })
   const limitLines = functions.filter(entry => entry.result.kind === 'limit')
   const layout = cartesianLayout({
     xMin: 0, xMax: 1, yMin: 0, yMax: 1,
     xTitle: sign > 0 ? 'x (log scale)' : 'x (log scale, negative values)',
-    yTitle: logY ? 'f(x) (log scale)' : 'f(x)',
+    yTitle: logY ? (ySign < 0 ? 'f(x) (log scale, negative values)' : 'f(x) (log scale)') : 'f(x)',
     showLegend: functions.length > 1,
     shapes: limitLines.map(entry => ({ type: 'line', xref: 'paper', x0: 0, x1: 1, y0: entry.result.value, y1: entry.result.value, line: { color: entry.color, width: 1.5, dash: 'dash' } })),
     annotations: limitLines.map(entry => ({ xref: 'paper', x: 0.01, xanchor: 'left', y: entry.result.value, yanchor: 'bottom', text: `y = ${describeValue(entry.result.value).name ?? describeValue(entry.result.value).text.replace('≈ ', '')}`, showarrow: false, font: { size: 11, color: entry.color } })),
   })
-  layout.xaxis = { ...layout.xaxis, type: 'log', range: [0, 12], autorange: false, tickprefix: sign < 0 ? '−' : '', exponentformat: 'power', dtick: 1, zeroline: false }
-  layout.yaxis = { ...layout.yaxis, type: logY ? 'log' : 'linear', range: undefined, autorange: true, exponentformat: 'power' }
+  layout.xaxis = { ...layout.xaxis, type: 'log', range: [-0.15, 12.15], autorange: false, tickprefix: sign < 0 ? '−' : '', exponentformat: 'power', dtick: 1, zeroline: false, automargin: true }
+  layout.yaxis = { ...layout.yaxis, type: logY ? 'log' : 'linear', range: undefined, autorange: true, exponentformat: 'power', tickprefix: logY && ySign < 0 ? '−' : '', automargin: true }
+  if (logY && ySign < 0) layout.yaxis.autorange = 'reversed' // bigger negative numbers go down, as on a normal graph
+  if (logY) { layout.shapes = []; layout.annotations = [] }
 
   return <div className="viz-layout"><div className="viz-panel">
     <div className="viz-header"><span className="viz-title">lim x →</span><BoundInput aria-label="Limit target" className="viz-num-input limit-target-input" value={target} onChange={onTarget} /></div>
