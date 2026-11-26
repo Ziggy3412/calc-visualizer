@@ -32,7 +32,36 @@ export function makeInfinityEval(expr) {
   }
   const f = (sign, k) => toNumber(exact(sign, k))
   f.exact = exact
+  // Fast ordinary-number evaluation, accurate enough for |x| up to about 10^7.
+  f.plain = x => {
+    try { const value = plainCompiled.evaluate({ x }); return typeof value === 'number' ? value : NaN } catch { return NaN }
+  }
   return f
+}
+
+// Points for a normal-looking graph of f between 0 and sign · 10^k.
+// Starts just past 0 (x = 0 is often undefined, as in 1/x).
+export function sampleWindow(f, sign, k, count = 400) {
+  const xs = [], ys = []
+  const precise = k > 7
+  for (let i = 1; i <= count; i++) {
+    const t = i / count
+    xs.push(sign * 10 ** k * t)
+    ys.push(precise ? f(sign, k + Math.log10(t)) : f.plain(sign * 10 ** k * t))
+  }
+  return { xs, ys }
+}
+
+// A y-range that shows the shape without one extreme point (such as 1/x right
+// next to 0, or a vertical asymptote) squashing everything else flat.
+export function niceYRange(values, include = []) {
+  const finite = values.filter(Number.isFinite).sort((a, b) => a - b)
+  if (!finite.length) return [-1, 1]
+  const at = q => finite[Math.min(finite.length - 1, Math.max(0, Math.round(q * (finite.length - 1))))]
+  let lo = Math.min(at(0.01), ...include), hi = Math.max(at(0.99), ...include)
+  if (hi - lo < 1e-12 * Math.max(1, Math.abs(hi))) { const pad = Math.max(1, Math.abs(hi) * 0.5); return [lo - pad, hi + pad] }
+  const pad = (hi - lo) * 0.08
+  return [lo - pad, hi + pad]
 }
 const toNumber = value => value?.isBigNumber ? Number(value.toString()) : value
 

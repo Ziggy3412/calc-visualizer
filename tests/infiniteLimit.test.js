@@ -41,3 +41,20 @@ test('readable numbers', () => {
   assert.equal(formatValue(NaN), 'undefined')
   assert.equal(formatValue(makeInfinityEval('e^x').exact(1, 6)), '3.033 × 10⁴³⁴²⁹⁴') // too big for a normal number
 })
+
+import { niceYRange, sampleWindow } from '../src/shared/infiniteLimit.js'
+test('graph samples run from just past 0 out to ±10^k, accurately even far out', () => {
+  const f = makeInfinityEval('sqrt(x^2+x)-x')
+  const { xs, ys } = sampleWindow(f, 1, 10, 50)
+  assert.equal(xs.at(-1), 1e10)
+  assert.ok(xs[0] > 0)
+  assert.ok(ys.every(y => Math.abs(y - 0.5) < 0.01), 'stays near 1/2 with no rounding noise')
+  const neg = sampleWindow(makeInfinityEval('1/x'), -1, 2, 10)
+  assert.equal(neg.xs.at(-1), -100)
+  assert.ok(neg.ys.every(y => y < 0))
+})
+test('y-range ignores a single extreme point and includes the limit line', () => {
+  const [lo, hi] = niceYRange([1e9, ...Array.from({ length: 200 }, (_, i) => i / 200)], [2])
+  assert.ok(lo < 0 && hi > 2 && hi < 10)
+  assert.deepEqual(niceYRange([]), [-1, 1])
+})
