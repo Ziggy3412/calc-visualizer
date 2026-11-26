@@ -61,7 +61,8 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
     shapes: limitLines.map(entry => ({ type: 'line', xref: 'paper', x0: 0, x1: 1, y0: entry.result.value, y1: entry.result.value, line: { color: entry.color, width: 1.5, dash: 'dash' } })),
     annotations: limitLines.map(entry => ({ xref: 'paper', x: 0.01, xanchor: 'left', y: entry.result.value, yanchor: 'bottom', text: `y = ${describeValue(entry.result.value).name ?? describeValue(entry.result.value).text.replace('≈ ', '')}`, showarrow: false, font: { size: 11, color: entry.color } })),
   })
-  layout.xaxis = { ...layout.xaxis, type: 'log', range: [-0.15, 12.15], autorange: false, tickprefix: sign < 0 ? '−' : '', exponentformat: 'power', dtick: 1, zeroline: false, automargin: true }
+  // Like a normal number line, x increases to the right: for x → −∞ that puts −10¹² on the left.
+  layout.xaxis = { ...layout.xaxis, type: 'log', range: sign > 0 ? [-0.15, 12.15] : [12.15, -0.15], autorange: false, tickprefix: sign < 0 ? '−' : '', exponentformat: 'power', dtick: 1, zeroline: false, automargin: true }
   layout.yaxis = { ...layout.yaxis, type: logY ? 'log' : 'linear', range: undefined, autorange: true, exponentformat: 'power', tickprefix: logY && ySign < 0 ? '−' : '', automargin: true }
   if (logY && ySign < 0) layout.yaxis.autorange = 'reversed' // bigger negative numbers go down, as on a normal graph
   if (logY) { layout.shapes = []; layout.annotations = [] }
@@ -84,6 +85,8 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
     </div>)}
   </div><div className="viz-main">
     <div className="viz-graph"><Plot data={traces} layout={layout} config={{ ...PLOT_CONFIG, doubleClick: 'reset' }} useResizeHandler style={{ width: '100%', height: '100%' }} /></div>
-    <VizSlider label={<>Explore x = <strong>{formatValue(probe)}</strong></>} min={0} max={12} step={0.1} value={power} onChange={setPower} leftLabel={formatPower(sign, 0)} rightLabel={formatPower(sign, 12)} />
+    {sign > 0
+      ? <VizSlider label={<>Explore x = <strong>{formatValue(probe)}</strong></>} min={0} max={12} step={0.1} value={power} onChange={setPower} leftLabel={formatPower(1, 0)} rightLabel={formatPower(1, 12)} />
+      : <VizSlider label={<>Explore x = <strong>{formatValue(probe)}</strong></>} min={-12} max={0} step={0.1} value={-power} onChange={v => setPower(-v)} leftLabel={formatPower(-1, 12)} rightLabel={formatPower(-1, 0)} />}
   </div></div>
 }
