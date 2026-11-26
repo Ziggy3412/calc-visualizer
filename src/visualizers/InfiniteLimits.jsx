@@ -1,15 +1,26 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import BoundInput from '../components/BoundInput'
 import MathInput from '../components/MathInput'
 import Plot from '../components/ThemedPlot'
 import TeX from '../components/TeX'
 import VizSlider from '../components/VizSlider'
+import ZoomControls from '../components/ZoomControls'
 import { cartesianLayout, PLOT_CONFIG } from '../shared/plotDefaults'
 import { formatBound } from '../shared/infinity'
-import { analyzeInfinity, describeValue, formatPower, formatValue, makeInfinityEval, niceYRange, sampleWindow, verdictText } from '../shared/infiniteLimit'
+import { analyzeInfinity, describeValue, formatPower, formatValue, makeInfinityEval, niceYRange, sampleRange, sampleWindow, verdictText } from '../shared/infiniteLimit'
 
 const TABLE_POWERS = [1, 2, 3, 4, 5, 6, 8, 10, 12]
 const COLORS = ['#2d70b3', '#dc2626', '#388c46']
+
+// Leave a gap instead of drawing a vertical line across an asymptote (like
+// 1/x at 0): break the curve where it jumps much more than the visible height.
+function breakJumps(ys, height) {
+  return ys.map((v, i) => {
+    if (!Number.isFinite(v)) return null
+    const prev = ys[i - 1]
+    return i > 0 && Number.isFinite(prev) && Math.abs(v - prev) > 3 * height ? null : v
+  })
+}
 
 export default function InfiniteLimits({ target, onTarget, entries, onEntries }) {
   const [power, setPower] = useState(2)
@@ -35,21 +46,46 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
   // A normal graph from 0 out to x = ±10^power. Zooming out with the slider shows
   // the function's long-run behavior with its real shape (no log scales).
   const edge = sign * 10 ** power
-  const samples = useMemo(() => functions.map(entry => sampleWindow(entry.f, sign, power)), [functions, sign, power])
+  const home = useMemo(() => functions.map(entry => sampleWindow(entry.f, sign, power)), [functions, sign, power])
   const limitValues = functions.filter(entry => entry.result.kind === 'limit').map(entry => entry.result.value)
-  const yRange = niceYRange(samples.flatMap(sample => sample.ys), limitValues)
+  const homeY = niceYRange(home.flatMap(sample => sample.ys), limitValues)
+  const homeView = { x: sign > 0 ? [0, edge] : [edge, 0], y: homeY }
+
+  // Dragging, scrolling or the zoom buttons move away from the home view; the
+  // curve is redrawn for whatever part of the plane is on screen. Moving the
+  // slider or changing the function goes back home.
+  const viewKey = `${sign}|${power}|${functions.map(entry => entry.expr).join(';')}`
+  const [moved, setMoved] = useState(null)
+  const view = moved?.key === viewKey ? moved : homeView
+  const setView = useCallback(next => setMoved({ ...next, key: viewKey }), [viewKey])
+  const samples = useMemo(
+    () => (moved?.key === viewKey ? functions.map(entry => sampleRange(entry.f, moved.x[0], moved.x[1])) : home),
+    [moved, viewKey, functions, home],
+  )
+  const scale = factor => {
+    const [x0, x1] = view.x, [y0, y1] = view.y
+    const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2
+    setView({ x: [cx - (cx - x0) * factor, cx + (x1 - cx) * factor], y: [cy - (cy - y0) * factor, cy + (y1 - cy) * factor] })
+  }
+  const handleRelayout = update => {
+    if (update['xaxis.autorange'] || update['yaxis.autorange']) { setMoved(null); return }
+    const x = update['xaxis.range'] ?? [update['xaxis.range[0]'], update['xaxis.range[1]']]
+    const y = update['yaxis.range'] ?? [update['yaxis.range[0]'], update['yaxis.range[1]']]
+    if (x.every(Number.isFinite) || y.every(Number.isFinite)) setView({ x: x.every(Number.isFinite) ? x : view.x, y: y.every(Number.isFinite) ? y : view.y })
+  }
+  const handleWheel = event => { event.preventDefault(); scale(event.deltaY < 0 ? 0.85 : 1 / 0.85) }
 
   const traces = functions.flatMap((entry, i) => {
     const { xs, ys } = samples[i]
-    const y = ys.at(-1)
+    const y = home[i].ys.at(-1) // the purple dot marks the slider's x = ±10^power
     return [
-      { x: xs, y: ys.map(v => (Number.isFinite(v) ? v : null)), customdata: xs.map((x, j) => [formatValue(x), formatValue(ys[j])]), type: 'scatter', mode: 'lines', line: { color: entry.color, width: 3 }, name: entry.expr, connectgaps: false, hovertemplate: 'x = %{customdata[0]}<br>f(x) = %{customdata[1]}<extra></extra>' },
+      { x: xs, y: breakJumps(ys, view.y[1] - view.y[0]), customdata: xs.map((x, j) => [formatValue(x), formatValue(ys[j])]), type: 'scatter', mode: 'lines', line: { color: entry.color, width: 3 }, name: entry.expr, connectgaps: false, hovertemplate: 'x = %{customdata[0]}<br>f(x) = %{customdata[1]}<extra></extra>' },
       ...(Number.isFinite(y) ? [{ x: [edge], y: [y], type: 'scatter', mode: 'markers', marker: { size: 11, color: '#7c3aed' }, showlegend: false, hovertemplate: `x = ${formatValue(edge)}<br>f(x) = ${formatValue(y)}<extra></extra>` }] : []),
     ]
   })
   const limitLines = functions.filter(entry => entry.result.kind === 'limit')
   const layout = cartesianLayout({
-    xMin: sign > 0 ? 0 : edge, xMax: sign > 0 ? edge : 0, yMin: yRange[0], yMax: yRange[1],
+    xMin: view.x[0], xMax: view.x[1], yMin: view.y[0], yMax: view.y[1],
     xTitle: 'x', yTitle: 'f(x)',
     showLegend: functions.length > 1,
     shapes: limitLines.map(entry => ({ type: 'line', xref: 'paper', x0: 0, x1: 1, y0: entry.result.value, y1: entry.result.value, line: { color: entry.color, width: 1.5, dash: 'dash' } })),
@@ -75,7 +111,10 @@ export default function InfiniteLimits({ target, onTarget, entries, onEntries })
       </table>
     </div>)}
   </div><div className="viz-main">
-    <div className="viz-graph"><Plot data={traces} layout={layout} config={{ ...PLOT_CONFIG, doubleClick: 'reset' }} useResizeHandler style={{ width: '100%', height: '100%' }} /></div>
+    <div className="viz-graph" onWheel={handleWheel}>
+      <Plot data={traces} layout={layout} config={{ ...PLOT_CONFIG, doubleClick: 'autosize' }} onRelayout={handleRelayout} useResizeHandler style={{ width: '100%', height: '100%' }} />
+      <ZoomControls onZoomIn={() => scale(0.7)} onZoomOut={() => scale(1 / 0.7)} onReset={() => setMoved(null)} />
+    </div>
     {sign > 0
       ? <VizSlider label={<>Zoom out: showing x from 0 to <strong>{formatValue(edge)}</strong></>} min={1} max={12} step={0.1} value={power} onChange={setPower} leftLabel={formatPower(1, 1)} rightLabel={formatPower(1, 12)} />
       : <VizSlider label={<>Zoom out: showing x from <strong>{formatValue(edge)}</strong> to 0</>} min={-12} max={-1} step={0.1} value={-power} onChange={v => setPower(-v)} leftLabel={formatPower(-1, 12)} rightLabel={formatPower(-1, 1)} />}

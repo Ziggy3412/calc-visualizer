@@ -39,6 +39,19 @@ export function makeInfinityEval(expr) {
   return f
 }
 
+// Points of f across any visible x-range [a, b], for panning and zooming.
+// Uses 64-digit math for huge |x| so far-out views stay accurate.
+export function sampleRange(f, a, b, count = 600) {
+  const xs = [], ys = []
+  for (let i = 0; i <= count; i++) {
+    const x = a + (b - a) * (i / count)
+    if (x === 0) continue
+    xs.push(x)
+    ys.push(Math.abs(x) <= 1e7 ? f.plain(x) : f(Math.sign(x), Math.log10(Math.abs(x))))
+  }
+  return { xs, ys }
+}
+
 // Points for a normal-looking graph of f between 0 and sign · 10^k.
 // Starts just past 0 (x = 0 is often undefined, as in 1/x).
 export function sampleWindow(f, sign, k, count = 400) {

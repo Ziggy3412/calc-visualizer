@@ -51,7 +51,7 @@ export default function ImplicitDifferentiation({ initial = {} }){
     <div className="viz-section"><label className="viz-field-label">Point x</label><input className="viz-num-input" aria-label="Point x" value={xText} onChange={e=>setX(e.target.value)}/><label className="viz-field-label">Point y</label><input className="viz-num-input" aria-label="Point y" value={yText} onChange={e=>setY(e.target.value)}/><span className="viz-hint">Expressions such as sqrt(21) are accepted.</span></div>
     <div className="lesson-message">{point?.valid?(point.kind==='regular'?`Slope at this point: ${num(point.slope)}`:point.kind==='vertical'?'Vertical tangent':'Singular point'):point?.message||'Enter an equation to begin.'}</div>
   </div><div className="lesson-main">
-    <div className="lesson-graph"><Plot data={plotData} layout={layout} config={PLOT_CONFIG} onRelayout={view.handleRelayout} useResizeHandler style={{width:'100%',height:'100%'}}/><ZoomControls onZoomIn={view.zoomIn} onZoomOut={view.zoomOut} onReset={view.resetView}/></div>
+    <div className="lesson-graph" onWheel={view.handleWheel}><Plot data={plotData} layout={layout} config={PLOT_CONFIG} onRelayout={view.handleRelayout} useResizeHandler style={{width:'100%',height:'100%'}}/><ZoomControls onZoomIn={view.zoomIn} onZoomOut={view.zoomOut} onReset={view.resetView}/></div>
     {result.error?<div className="lesson-message" role="status">{result.error}</div>:<LessonSteps steps={steps}/>}
   </div></div>
 }
